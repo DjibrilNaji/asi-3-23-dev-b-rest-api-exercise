@@ -11,6 +11,20 @@ import auth from "../middlewares/auth.js"
 import { InvalidAccessError, InvalidArgumentError } from "../errors.js"
 
 const prepareUsersRoutes = ({ app, db }) => {
+  app.get("/users", auth, async (req, res) => {
+    const {
+      session: { user: userSession },
+    } = req.locals
+    console.log(userSession)
+
+    if (userSession.role !== "admin") {
+      throw new InvalidAccessError()
+    }
+
+    const users = await UserModel.query()
+
+    res.send({ result: users })
+  })
   app.post(
     "/users",
     auth,

@@ -1,5 +1,6 @@
 import jsonwebtoken from "jsonwebtoken"
 import config from "../config.js"
+import { InvalidSessionError } from "../errors.js"
 
 const auth = (req, res, next) => {
   const jwt = req.headers.authorization?.slice(7)
@@ -11,9 +12,7 @@ const auth = (req, res, next) => {
     next()
   } catch (err) {
     if (err instanceof jsonwebtoken.JsonWebTokenError) {
-      res.status(403).send({ error: "Forbidden" })
-
-      return
+      throw new InvalidSessionError()
     }
 
     console.error(err)
