@@ -20,8 +20,10 @@ export const passwordValidator = yup
 // permissions
 const permissionValidator = yup
   .string()
-  .nullable()
-  .matches(/^(?!.*([CRUD]).*\1)[CRUD]*$/)
+  .matches(
+    /^(?!.*([CRUD]).*\1)[CRUD]*$/,
+    "Permission must only contain at least one role among CRUD"
+  )
 
 export const ressourcePermissionValidator = yup.object({
   users: permissionValidator,

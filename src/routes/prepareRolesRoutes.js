@@ -114,6 +114,59 @@ const prepareRolesRoutes = ({ app, db }) => {
       res.send({ result: "OK" })
     }
   )
+
+  app.patch(
+    "/role/:roleId",
+    auth,
+    validate({
+      params: {
+        roleId: idValidator.required(),
+      },
+      body: {
+        name: nameValidator.required(),
+        permissions: ressourcePermissionValidator.required(),
+      },
+    }),
+    async (req, res) => {
+      const {
+        body: { name, permissions },
+        session: { user: userSession },
+      } = req.locals
+
+      const sessionRoleName = userSession.role
+      const sessionRole = await RoleModel.query().findOne({
+        name: sessionRoleName,
+      })
+
+      if (!sessionRole) {
+        throw new InvalidArgumentError()
+      }
+
+      const permission = sessionRole.permissions.roles
+
+      if (!permission.includes("U")) {
+        throw new InvalidAccessError()
+      }
+
+      const role = await RoleModel.query().findById(req.params.roleId)
+
+      if (!role) {
+        throw new InvalidArgumentError()
+      }
+
+      const updatedRole = await RoleModel.query()
+        .update({
+          ...(name ? { name } : {}),
+          ...(permissions ? { permissions } : {}),
+        })
+        .where({
+          id: req.params.roleId,
+        })
+        .returning("*")
+
+      res.send({ result: updatedRole })
+    }
+  )
 }
 
 export default prepareRolesRoutes
