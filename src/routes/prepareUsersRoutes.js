@@ -6,6 +6,7 @@ import {
   nameValidator,
   emailValidator,
   passwordValidator,
+  idValidator,
 } from "../validators.js"
 import auth from "../middlewares/auth.js"
 import { InvalidAccessError, InvalidArgumentError } from "../errors.js"
@@ -15,9 +16,17 @@ const prepareUsersRoutes = ({ app, db }) => {
     const {
       session: { user: userSession },
     } = req.locals
-    console.log(userSession)
 
-    if (userSession.role !== "admin") {
+    const name = userSession.role
+    const sessionRole = await RoleModel.query().findOne({ name })
+
+    if (!sessionRole) {
+      throw new InvalidArgumentError()
+    }
+
+    const permission = sessionRole.permissions.users
+
+    if (!permission.includes("R")) {
       throw new InvalidAccessError()
     }
 
@@ -25,13 +34,14 @@ const prepareUsersRoutes = ({ app, db }) => {
 
     res.send({ result: users })
   })
+
   app.post(
     "/users",
     auth,
     validate({
       body: {
         email: emailValidator.required(),
-        name: nameValidator.required(),
+        roleId: idValidator.required(),
         firstName: nameValidator,
         lastName: nameValidator,
         password: passwordValidator.required(),
@@ -39,12 +49,27 @@ const prepareUsersRoutes = ({ app, db }) => {
     }),
     async (req, res) => {
       const {
-        body: { email, name, firstName, lastName, password },
+        body: { email, roleId, firstName, lastName, password },
         session: { user: userSession },
       } = req.locals
 
-      if (userSession.role !== "admin") {
+      const name = userSession.role
+      const sessionRole = await RoleModel.query().findOne({ name })
+
+      if (!sessionRole) {
+        throw new InvalidArgumentError()
+      }
+
+      const permission = sessionRole.permissions.users
+
+      if (!permission.includes("C")) {
         throw new InvalidAccessError()
+      }
+
+      const role = await RoleModel.query().findById(roleId)
+
+      if (!role) {
+        throw new InvalidArgumentError()
       }
 
       const user = await UserModel.query().findOne({ email })
@@ -54,14 +79,6 @@ const prepareUsersRoutes = ({ app, db }) => {
 
         return
       }
-
-      const role = await RoleModel.query().findOne({ name })
-
-      if (!role) {
-        throw new InvalidArgumentError()
-      }
-
-      const roleId = role.id
 
       const [passwordHash, passwordSalt] = await hashPassword(password)
 

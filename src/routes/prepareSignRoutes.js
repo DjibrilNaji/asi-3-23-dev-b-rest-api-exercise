@@ -37,8 +37,9 @@ const prepareSignRoutes = ({ app, db }) => {
         {
           payload: {
             user: {
-              id: user.id,
+              userId: user.id,
               role: user.name,
+              permission: user.permissions,
             },
           },
         },
