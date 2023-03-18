@@ -167,6 +167,46 @@ const prepareRolesRoutes = ({ app, db }) => {
       res.send({ result: updatedRole })
     }
   )
+
+  app.delete(
+    "/role/:roleId",
+    auth,
+    validate({
+      params: {
+        roleId: idValidator.required(),
+      },
+    }),
+    async (req, res) => {
+      const {
+        session: { user: userSession },
+      } = req.locals
+
+      const name = userSession.role
+      const sessionRole = await RoleModel.query().findOne({ name })
+
+      if (!sessionRole) {
+        throw new InvalidArgumentError()
+      }
+
+      const permission = sessionRole.permissions.roles
+
+      if (!permission.includes("D")) {
+        throw new InvalidAccessError()
+      }
+
+      const role = await RoleModel.query().findById(req.params.roleId)
+
+      if (!role) {
+        throw new InvalidArgumentError()
+      }
+
+      await RoleModel.query().delete().where({
+        id: req.params.roleId,
+      })
+
+      res.send({ result: role })
+    }
+  )
 }
 
 export default prepareRolesRoutes
