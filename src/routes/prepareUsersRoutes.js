@@ -48,8 +48,6 @@ const prepareUsersRoutes = ({ app, db }) => {
         session: { user: userSession },
       } = req.locals
 
-      console.log(userSession)
-
       const name = userSession.role
       const sessionRole = await RoleModel.query().findOne({ name })
 
@@ -133,6 +131,75 @@ const prepareUsersRoutes = ({ app, db }) => {
       })
 
       res.send({ result: "OK" })
+    }
+  )
+
+  app.patch(
+    "/user/:userId",
+    auth,
+    validate({
+      params: {
+        userId: idValidator.required(),
+      },
+      body: {
+        email: emailValidator,
+        roleId: idValidator,
+        firstName: nameValidator,
+        lastName: nameValidator,
+        password: passwordValidator,
+      },
+    }),
+    async (req, res) => {
+      const {
+        body: { email, roleId, firstName, lastName, password },
+        session: { user: userSession },
+      } = req.locals
+
+      const name = userSession.role
+      const sessionRole = await RoleModel.query().findOne({ name })
+
+      if (!sessionRole) {
+        throw new InvalidArgumentError()
+      }
+
+      const permission = sessionRole.permissions.users
+
+      if (
+        !permission.includes("U") &&
+        req.params.userId != userSession.userId
+      ) {
+        throw new InvalidAccessError()
+      }
+
+      const role = await RoleModel.query().findById(roleId)
+
+      if (!role) {
+        throw new InvalidArgumentError()
+      }
+
+      const user = await UserModel.query().findById(req.params.userId)
+
+      if (!user) {
+        throw new InvalidArgumentError()
+      }
+
+      const [passwordHash, passwordSalt] = await hashPassword(password)
+
+      const updatedUser = await UserModel.query()
+        .update({
+          ...(email ? { email } : {}),
+          ...(permission.includes("C") && roleId ? { roleId } : {}),
+          ...(firstName ? { firstName } : {}),
+          ...(lastName ? { lastName } : {}),
+          ...(passwordHash ? { passwordHash } : {}),
+          ...(passwordSalt ? { passwordSalt } : {}),
+        })
+        .where({
+          id: req.params.userId,
+        })
+        .returning("*")
+
+      res.send({ result: updatedUser })
     }
   )
 
