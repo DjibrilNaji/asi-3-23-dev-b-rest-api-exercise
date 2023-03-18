@@ -135,6 +135,46 @@ const prepareUsersRoutes = ({ app, db }) => {
       res.send({ result: "OK" })
     }
   )
+
+  app.delete(
+    "/user/:userId",
+    auth,
+    validate({
+      params: {
+        userId: idValidator.required(),
+      },
+    }),
+    async (req, res) => {
+      const {
+        session: { user: userSession },
+      } = req.locals
+
+      const name = userSession.role
+      const sessionRole = await RoleModel.query().findOne({ name })
+
+      if (!sessionRole) {
+        throw new InvalidArgumentError()
+      }
+
+      const permission = sessionRole.permissions.users
+
+      if (!permission.includes("D")) {
+        throw new InvalidAccessError()
+      }
+
+      const user = await UserModel.query().findById(req.params.userId)
+
+      if (!user) {
+        throw new InvalidArgumentError()
+      }
+
+      await UserModel.query().delete().where({
+        id: req.params.userId,
+      })
+
+      res.send({ result: user })
+    }
+  )
 }
 
 export default prepareUsersRoutes
