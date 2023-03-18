@@ -16,3 +16,16 @@ export const passwordValidator = yup
     /^(?=.*[\p{Ll}])(?=.*[\p{Lu}])(?=.*[0-9])(?=.*[^0-9\p{Lu}\p{Ll}]).*$/gu,
     "Password must contain at least 1 upper & 1 lower case letters, 1 digit, 1 spe. character"
   )
+
+// permissions
+const permissionValidator = yup
+  .string()
+  .nullable()
+  .matches(/^(?!.*([CRUD]).*\1)[CRUD]*$/)
+
+export const ressourcePermissionValidator = yup.object({
+  users: permissionValidator,
+  roles: permissionValidator,
+  pages: permissionValidator,
+  navigation_menu: permissionValidator,
+})

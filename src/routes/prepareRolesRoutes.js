@@ -2,7 +2,11 @@ import RoleModel from "../db/models/RoleModel.js"
 import { InvalidAccessError, InvalidArgumentError } from "../errors.js"
 import auth from "../middlewares/auth.js"
 import validate from "../middlewares/validate.js"
-import { idValidator } from "../validators.js"
+import {
+  idValidator,
+  nameValidator,
+  ressourcePermissionValidator,
+} from "../validators.js"
 
 const prepareRolesRoutes = ({ app, db }) => {
   app.get("/roles", auth, async (req, res) => {
@@ -41,8 +45,8 @@ const prepareRolesRoutes = ({ app, db }) => {
         session: { user: userSession },
       } = req.locals
 
-      const name = userSession.role
-      const sessionRole = await RoleModel.query().findOne({ name })
+      const sessionRoleName = userSession.role
+      const sessionRole = await RoleModel.query().findOne({ sessionRoleName })
 
       if (!sessionRole) {
         throw new InvalidArgumentError()
@@ -61,6 +65,53 @@ const prepareRolesRoutes = ({ app, db }) => {
       }
 
       res.send({ result: role })
+    }
+  )
+
+  app.post(
+    "/role",
+    auth,
+    validate({
+      body: {
+        name: nameValidator.required(),
+        permissions: ressourcePermissionValidator.required(),
+      },
+    }),
+    async (req, res) => {
+      const {
+        body: { name, permissions },
+        session: { user: userSession },
+      } = req.locals
+
+      const sessionRoleName = userSession.role
+      const sessionRole = await RoleModel.query().findOne({
+        name: sessionRoleName,
+      })
+
+      if (!sessionRole) {
+        throw new InvalidArgumentError()
+      }
+
+      const permission = sessionRole.permissions.roles
+
+      if (!permission.includes("C")) {
+        throw new InvalidAccessError()
+      }
+
+      const role = await RoleModel.query().findOne({ name })
+
+      if (role) {
+        res.send({ result: "OK" })
+
+        return
+      }
+
+      await db("roles").insert({
+        name,
+        permissions,
+      })
+
+      res.send({ result: "OK" })
     }
   )
 }
