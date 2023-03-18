@@ -3,6 +3,7 @@ import hashPassword from "../db/hashPassword.js"
 import { emailValidator, stringValidator } from "../validators.js"
 import jsonwebtoken from "jsonwebtoken"
 import config from "../config.js"
+import { InvalidCredentialsError } from "../errors.js"
 
 const prepareSignRoutes = ({ app, db }) => {
   app.post(
@@ -20,17 +21,13 @@ const prepareSignRoutes = ({ app, db }) => {
         .innerJoin("roles", "users.roleId", "roles.id")
 
       if (!user) {
-        res.status(401).send({ error: "Invalid credentials." })
-
-        return
+        throw new InvalidCredentialsError()
       }
 
       const [passwordHash] = await hashPassword(password, user.passwordSalt)
 
       if (passwordHash !== user.passwordHash) {
-        res.status(401).send({ error: "Invalid credentials." })
-
-        return
+        throw new InvalidCredentialsError()
       }
 
       const jwt = jsonwebtoken.sign(

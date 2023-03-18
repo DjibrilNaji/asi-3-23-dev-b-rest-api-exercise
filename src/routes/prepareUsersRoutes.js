@@ -35,6 +35,47 @@ const prepareUsersRoutes = ({ app, db }) => {
     res.send({ result: users })
   })
 
+  app.get(
+    "/user/:userId",
+    auth,
+    validate({
+      params: {
+        userId: idValidator.required(),
+      },
+    }),
+    async (req, res) => {
+      const {
+        session: { user: userSession },
+      } = req.locals
+
+      console.log(userSession)
+
+      const name = userSession.role
+      const sessionRole = await RoleModel.query().findOne({ name })
+
+      if (!sessionRole) {
+        throw new InvalidArgumentError()
+      }
+
+      const permission = sessionRole.permissions.users
+
+      if (
+        !permission.includes("R") &&
+        req.params.userId != userSession.userId
+      ) {
+        throw new InvalidAccessError()
+      }
+
+      const user = await UserModel.query().findById(req.params.userId)
+
+      if (!user) {
+        throw new InvalidArgumentError()
+      }
+
+      res.send({ result: user })
+    }
+  )
+
   app.post(
     "/users",
     auth,
