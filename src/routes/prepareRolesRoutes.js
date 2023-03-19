@@ -46,7 +46,9 @@ const prepareRolesRoutes = ({ app, db }) => {
       } = req.locals
 
       const sessionRoleName = userSession.role
-      const sessionRole = await RoleModel.query().findOne({ sessionRoleName })
+      const sessionRole = await RoleModel.query().findOne({
+        name: sessionRoleName,
+      })
 
       if (!sessionRole) {
         throw new InvalidArgumentError()
