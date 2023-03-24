@@ -1,13 +1,32 @@
 import * as yup from "yup"
+import config from "./config.js"
 
+// generic
 export const idValidator = yup.number().integer().min(1)
-
-export const emailValidator = yup.string().email()
 
 export const stringValidator = yup.string()
 
-// name and firstName
 export const nameValidator = yup.string().min(1)
+
+// pages
+export const titleValidator = yup.string().min(1).max(300)
+
+export const contentValidator = yup.string().min(1)
+
+export const statusValidator = yup
+  .string()
+  .lowercase()
+  .oneOf(["published", "draft"])
+
+export const urlSlugValidator = yup
+  .string()
+  .matches(
+    /^[a-z]+[a-z-]*$/,
+    "The URL cannot contain any capital letters, any numbers, any special characters except '-' to separate certain words"
+  )
+
+// users and permissions
+export const emailValidator = yup.string().email()
 
 export const passwordValidator = yup
   .string()
@@ -17,12 +36,11 @@ export const passwordValidator = yup
     "Password must contain at least 1 upper & 1 lower case letters, 1 digit, 1 spe. character"
   )
 
-// permissions
 const permissionValidator = yup
   .string()
   .matches(
     /^(?!.*([CRUD]).*\1)[CRUD]*$/,
-    "Permission must only contain at least one role among CRUD"
+    "Permission must only contain at least one permission among CRUD"
   )
 
 export const ressourcePermissionValidator = yup.object({
@@ -31,3 +49,15 @@ export const ressourcePermissionValidator = yup.object({
   pages: permissionValidator,
   navigation_menu: permissionValidator,
 })
+
+// Pagination
+export const limitValidator = yup
+  .number()
+  .integer()
+  .min(config.pagination.limit.min)
+  .max(config.pagination.limit.max)
+  .default(config.pagination.limit.default)
+
+export const pageValidator = yup.number().integer().min(0).default(1)
+
+export const orderValidator = yup.string().lowercase().oneOf(["asc", "desc"])

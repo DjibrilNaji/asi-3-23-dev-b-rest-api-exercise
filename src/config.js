@@ -19,6 +19,13 @@ const config = {
       directory: "./src/db/seeds",
     },
   },
+  pagination: {
+    limit: {
+      min: 1,
+      max: 100,
+      default: 3,
+    },
+  },
   security: {
     jwt: {
       secret: process.env.SECURITY_JWT_SECRET,
