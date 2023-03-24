@@ -1,3 +1,4 @@
+import RoleModel from "../db/models/RoleModel.js"
 import { InvalidAccessError, InvalidSessionError } from "../errors.js"
 import mw from "./mw.js"
 
@@ -12,6 +13,14 @@ const auth = (ressource, perm) =>
     const {
       session: { user: userSession },
     } = req.locals
+
+    const sessionRole = await RoleModel.query().findOne({
+      name: userSession.role,
+    })
+
+    if (!sessionRole) {
+      throw new InvalidSessionError()
+    }
 
     const permission = userSession.permission[ressource]
 
