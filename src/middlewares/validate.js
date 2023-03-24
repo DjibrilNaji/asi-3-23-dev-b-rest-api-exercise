@@ -1,5 +1,6 @@
 import { deepmerge } from "deepmerge-ts"
 import * as yup from "yup"
+import { InvalidArgumentError } from "../errors.js"
 
 const createValidator = (name, schema) =>
   schema && { [name]: yup.object().shape(schema) }
@@ -35,9 +36,7 @@ const validate = (schema) => {
       next()
     } catch (err) {
       if (err instanceof yup.ValidationError) {
-        res.status(422).send({ error: err.errors })
-
-        return
+        throw new InvalidArgumentError(err.errors)
       }
 
       res.status(500).send({ error: "Oops. Something went wrong." })
