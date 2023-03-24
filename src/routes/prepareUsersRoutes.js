@@ -7,33 +7,34 @@ import {
   emailValidator,
   passwordValidator,
   idValidator,
+  limitValidator,
+  pageValidator,
+  orderValidator,
 } from "../validators.js"
 import auth from "../middlewares/auth.js"
 import { InvalidAccessError, InvalidArgumentError } from "../errors.js"
 
 const prepareUsersRoutes = ({ app, db }) => {
-  app.get("/users", auth, async (req, res) => {
-    const {
-      session: { user: userSession },
-    } = req.locals
+  app.get(
+    "/users",
+    auth("users", "R"),
+    validate({
+      query: {
+        limit: limitValidator,
+        page: pageValidator,
+        order: orderValidator.default("asc"),
+      },
+    }),
+    async (req, res) => {
+      const { limit, page, order } = req.locals.query
 
-    const name = userSession.role
-    const sessionRole = await RoleModel.query().findOne({ name })
+      const users = await UserModel.query()
+        .orderBy("id", order)
+        .modify("paginate", limit, page)
 
-    if (!sessionRole) {
-      throw new InvalidArgumentError()
+      res.send({ result: users })
     }
-
-    const permission = sessionRole.permissions.users
-
-    if (!permission.includes("R")) {
-      throw new InvalidAccessError()
-    }
-
-    const users = await UserModel.query()
-
-    res.send({ result: users })
-  })
+  )
 
   app.get(
     "/user/:userId",
