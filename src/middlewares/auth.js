@@ -1,24 +1,25 @@
-import jsonwebtoken from "jsonwebtoken"
-import config from "../config.js"
-import { InvalidSessionError } from "../errors.js"
+import { InvalidAccessError, InvalidSessionError } from "../errors.js"
+import mw from "./mw.js"
 
-const auth = (req, res, next) => {
-  const jwt = req.headers.authorization?.slice(7)
+const auth = (ressource, perm) =>
+  mw(async (req, res, next) => {
+    const session = req.locals
 
-  try {
-    const { payload } = jsonwebtoken.verify(jwt, config.security.jwt.secret)
-    req.locals.session = payload
-
-    next()
-  } catch (err) {
-    if (err instanceof jsonwebtoken.JsonWebTokenError) {
+    if (!session) {
       throw new InvalidSessionError()
     }
 
-    console.error(err)
+    const {
+      session: { user: userSession },
+    } = req.locals
 
-    res.status(500).send({ error: "Oops. Something went wrong." })
-  }
-}
+    const permission = userSession.permission[ressource]
+
+    if (!permission.includes(perm)) {
+      throw new InvalidAccessError()
+    }
+
+    next()
+  })
 
 export default auth
