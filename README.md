@@ -239,7 +239,7 @@ Toutes les pages, toutes les relations entre les users et les pages et toutes le
 
 - ## Add navigation-menu (**POST** "/navigation-menus")
 
-> Permissions : Admin or manager
+> **_Permissions : Admin or manager_**
 
 Cette route permet de créer un nouveau menu de navigation. Si le menu de navigation existe déjà, un message d'erreur sera renvoyé.
 
@@ -253,7 +253,7 @@ Cette route permet de créer un nouveau menu de navigation. Si le menu de naviga
 
 - ## View all navigation-menus (**GET** "/navigation-menus")
 
-> Permissions : All
+> **_Permissions : All_**
 
 Cette route renvoie la liste des menus de navigation existants avec une pagination :
 
@@ -267,15 +267,15 @@ Un tri par ordre ascendant ou descendant (asc, desc) :
 
 Les résultats sont renvoyés sous la forme d'un objet JSON qui est un tableau des menus de navigation existants.
 
-- ## View specific navigation-menus by Id (**GET** "navigation-menus/:navigationMenuId")
+- ## View specific navigation-menu by Id (**GET** "navigation-menus/:navigationMenuId")
 
-> Permissions : All
+> **_Permissions : All_**
 
 Cette route renvoie un seul élément des menus de navigation existants en fonction de l'id. Si le menu de navigation n'existe pas, un message d'erreur sera renvoyé.
 
 - ## Update navigation-menus by Id (**PATCH** "navigation-menus/:navigationMenuId")
 
-> Permissions : Admin or manager
+> **_Permissions : Admin or manager_**
 
 Cette route permet de mettre à jour un menu de navigation par son Id.
 
@@ -289,6 +289,8 @@ Cette route permet de mettre à jour un menu de navigation par son Id.
 
 - ## Delete navigation-menus by Id (**DELETE** "navigation-menus/:navigationMenuId")
 
-> Permissions : Admin or manager
+**_Delete a menu, return to delete all the pages that have it as a parent_**
 
-Cette route permet de supprimer un menu de navigation par son Id. Toutes les pages qui ont ce menu comme parent seront également supprimées.
+> **_Permissions : Admin or manager_**
+
+Cette route permet de supprimer un menu de navigation par son id. Toutes les pages qui ont ce menu comme parent seront également supprimées.
