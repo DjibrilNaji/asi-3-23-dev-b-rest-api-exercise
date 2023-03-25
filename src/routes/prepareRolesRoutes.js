@@ -1,65 +1,48 @@
 import RoleModel from "../db/models/RoleModel.js"
-import { InvalidAccessError, InvalidArgumentError } from "../errors.js"
+import UserModel from "../db/models/UserModel.js"
+import { InvalidArgumentError } from "../errors.js"
 import auth from "../middlewares/auth.js"
 import validate from "../middlewares/validate.js"
 import {
   idValidator,
+  limitValidator,
   nameValidator,
+  orderValidator,
+  pageValidator,
   ressourcePermissionValidator,
+  roleIdValidator,
 } from "../validators.js"
 
 const prepareRolesRoutes = ({ app, db }) => {
-  app.get("/roles", auth, async (req, res) => {
-    const {
-      session: { user: userSession },
-    } = req.locals
+  app.get(
+    "/roles",
+    auth("roles", "R"),
+    validate({
+      query: {
+        limit: limitValidator,
+        page: pageValidator,
+        order: orderValidator.default("asc"),
+      },
+    }),
+    async (req, res) => {
+      const { limit, page, order } = req.locals.query
+      const roles = await RoleModel.query()
+        .modify("paginate", limit, page)
+        .orderBy("id", order)
 
-    const name = userSession.role
-    const sessionRole = await RoleModel.query().findOne({ name })
-
-    if (!sessionRole) {
-      throw new InvalidArgumentError()
+      res.send({ result: roles })
     }
-
-    const permission = sessionRole.permissions.roles
-
-    if (!permission.includes("R")) {
-      throw new InvalidAccessError()
-    }
-
-    const roles = await RoleModel.query()
-
-    res.send({ result: roles })
-  })
+  )
 
   app.get(
     "/role/:roleId",
-    auth,
+    auth("roles", "R"),
     validate({
       params: {
         roleId: idValidator.required(),
       },
     }),
     async (req, res) => {
-      const {
-        session: { user: userSession },
-      } = req.locals
-
-      const sessionRoleName = userSession.role
-      const sessionRole = await RoleModel.query().findOne({
-        name: sessionRoleName,
-      })
-
-      if (!sessionRole) {
-        throw new InvalidArgumentError()
-      }
-
-      const permission = sessionRole.permissions.roles
-
-      if (!permission.includes("R")) {
-        throw new InvalidAccessError()
-      }
-
       const role = await RoleModel.query().findById(req.params.roleId)
 
       if (!role) {
@@ -71,8 +54,8 @@ const prepareRolesRoutes = ({ app, db }) => {
   )
 
   app.post(
-    "/role",
-    auth,
+    "/roles",
+    auth("roles", "C"),
     validate({
       body: {
         name: nameValidator.required(),
@@ -82,23 +65,7 @@ const prepareRolesRoutes = ({ app, db }) => {
     async (req, res) => {
       const {
         body: { name, permissions },
-        session: { user: userSession },
       } = req.locals
-
-      const sessionRoleName = userSession.role
-      const sessionRole = await RoleModel.query().findOne({
-        name: sessionRoleName,
-      })
-
-      if (!sessionRole) {
-        throw new InvalidArgumentError()
-      }
-
-      const permission = sessionRole.permissions.roles
-
-      if (!permission.includes("C")) {
-        throw new InvalidAccessError()
-      }
 
       const role = await RoleModel.query().findOne({ name })
 
@@ -119,36 +86,20 @@ const prepareRolesRoutes = ({ app, db }) => {
 
   app.patch(
     "/role/:roleId",
-    auth,
+    auth("roles", "U"),
     validate({
       params: {
         roleId: idValidator.required(),
       },
       body: {
-        name: nameValidator.required(),
-        permissions: ressourcePermissionValidator.required(),
+        name: nameValidator,
+        permissions: ressourcePermissionValidator,
       },
     }),
     async (req, res) => {
       const {
         body: { name, permissions },
-        session: { user: userSession },
       } = req.locals
-
-      const sessionRoleName = userSession.role
-      const sessionRole = await RoleModel.query().findOne({
-        name: sessionRoleName,
-      })
-
-      if (!sessionRole) {
-        throw new InvalidArgumentError()
-      }
-
-      const permission = sessionRole.permissions.roles
-
-      if (!permission.includes("U")) {
-        throw new InvalidAccessError()
-      }
 
       const role = await RoleModel.query().findById(req.params.roleId)
 
@@ -172,35 +123,24 @@ const prepareRolesRoutes = ({ app, db }) => {
 
   app.delete(
     "/role/:roleId",
-    auth,
+    auth("roles", "D"),
     validate({
       params: {
-        roleId: idValidator.required(),
+        roleId: roleIdValidator.required(),
       },
     }),
     async (req, res) => {
-      const {
-        session: { user: userSession },
-      } = req.locals
-
-      const name = userSession.role
-      const sessionRole = await RoleModel.query().findOne({ name })
-
-      if (!sessionRole) {
-        throw new InvalidArgumentError()
-      }
-
-      const permission = sessionRole.permissions.roles
-
-      if (!permission.includes("D")) {
-        throw new InvalidAccessError()
-      }
-
       const role = await RoleModel.query().findById(req.params.roleId)
+
+      console.log(role)
 
       if (!role) {
         throw new InvalidArgumentError()
       }
+
+      await UserModel.query()
+        .update({ roleId: 1 })
+        .where({ roleId: req.params.roleId })
 
       await RoleModel.query().delete().where({
         id: req.params.roleId,
