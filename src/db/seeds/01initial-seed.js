@@ -176,94 +176,70 @@ export const seed = async (knex) => {
   ])
 
   await knex("rel_navigation_menus__pages").insert([
-    // Main Menu
     {
       menuId: 1,
       pageId: 1,
       parentId: null,
     },
-    // Home page
     {
       menuId: 1,
       pageId: 2,
       parentId: null,
     },
-    // Page about dans le menu principal
     {
       menuId: 1,
       pageId: 3,
       parentId: null,
     },
-    // Page contact dans le menu principal
     {
       menuId: 1,
       pageId: 4,
       parentId: null,
     },
-
-    // Products
-    // Sous-menu de products 1
     {
       menuId: 1,
       pageId: 5,
       parentId: 4,
     },
-
-    // T-shirts
-    // Sous-menu de t-shirts
     {
       menuId: 1,
       pageId: 7,
       parentId: 5,
     },
-    // T-shirts male
     {
       menuId: 1,
       pageId: 8,
       parentId: 5,
     },
-    // T-shirts women
-
-    // Sous-menu de products 2
     {
       menuId: 1,
       pageId: 6,
       parentId: 4,
     },
-
-    // Shoes
-    // Sous-menu de shoes
     {
       menuId: 1,
       pageId: 9,
       parentId: 6,
     },
-    // Sneakers
     {
       menuId: 1,
       pageId: 10,
       parentId: 6,
     },
-    // Boot
-
-    // Footer menu
     {
       menuId: 2,
       pageId: 1,
       parentId: null,
     },
-    // Page d'accueil dans le footer menu
     {
       menuId: 2,
       pageId: 2,
       parentId: null,
     },
-    // Page about dans le footer menu
     {
       menuId: 2,
       pageId: 3,
       parentId: null,
     },
-    // Page contact dans le footer menu
   ])
 }

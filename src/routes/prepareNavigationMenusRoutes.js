@@ -128,7 +128,6 @@ const prepareNavigationMenusRoutes = ({ app, db }) => {
     }
   )
 
-  // Delete a menu, return to delete all the pages that have it as a parent
   app.delete(
     "/navigation-menus/:navigationMenuId",
     auth("navigation_menus", "D"),

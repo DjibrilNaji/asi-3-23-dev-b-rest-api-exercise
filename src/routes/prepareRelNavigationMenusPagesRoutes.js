@@ -11,8 +11,6 @@ import {
   pageValidator,
 } from "../validators.js"
 
-// These routes allow you to manage if you want to add manage the relationships between pages and menus or a submenu
-
 const prepareRelNavigationMenusPagesRoutes = ({ app, db }) => {
   app.get(
     "/rel-navigations-pages",
