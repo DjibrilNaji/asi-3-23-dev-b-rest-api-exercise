@@ -229,6 +229,66 @@ Le rôle du user ne sera modifiable que par un admin.
 
 - ## Delete users by Id (**DELETE** "users/:userId")
 
+> Permissions : Admin or Self
+
 Cette route permet de supprimer un user par son id. Tous les users qui ont ce menu comme parent seront également supprimées.
 
 Toutes les pages, toutes les relations entre les users et les pages et toutes les relations entre les pages et les menus de navigation seront supprimés en mêmes temps que l'user.
+
+# Navigations Menu
+
+- ## Add navigation-menu (**POST** "/navigation-menus")
+
+> Permissions : Admin or manager
+
+Cette route permet de créer un nouveau menu de navigation. Si le menu de navigation existe déjà, un message d'erreur sera renvoyé.
+
+### Voici un `body` type
+
+```json
+{
+  "name": "New menu"
+}
+```
+
+- ## View all navigation-menus (**GET** "/navigation-menus")
+
+> Permissions : All
+
+Cette route renvoie la liste des menus de navigation existants avec une pagination :
+
+- la limite `/navigation-menus?limit=2`
+
+- le numéro de la page `/navigation-menus?page=2`
+
+Un tri par ordre ascendant ou descendant (asc, desc) :
+
+- l'order `/navigation-menus?order=desc`
+
+Les résultats sont renvoyés sous la forme d'un objet JSON qui est un tableau des menus de navigation existants.
+
+- ## View specific navigation-menus by Id (**GET** "navigation-menus/:navigationMenuId")
+
+> Permissions : All
+
+Cette route renvoie un seul élément des menus de navigation existants en fonction de l'id. Si le menu de navigation n'existe pas, un message d'erreur sera renvoyé.
+
+- ## Update navigation-menus by Id (**PATCH** "navigation-menus/:navigationMenuId")
+
+> Permissions : Admin or manager
+
+Cette route permet de mettre à jour un menu de navigation par son Id.
+
+### Voici un `body` type
+
+```json
+{
+  "name": "Menu modified"
+}
+```
+
+- ## Delete navigation-menus by Id (**DELETE** "navigation-menus/:navigationMenuId")
+
+> Permissions : Admin or manager
+
+Cette route permet de supprimer un menu de navigation par son Id. Toutes les pages qui ont ce menu comme parent seront également supprimées.
