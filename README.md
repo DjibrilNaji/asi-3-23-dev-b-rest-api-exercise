@@ -7,11 +7,15 @@ https://github.com/DjibrilNaji/asi-3-23-dev-b-rest-api-exercise
 > Suivre ces commandes sur votre terminal
 
 ```bash
-1. git clone https://github.com/DjibrilNaji/asi-3-23-dev-b-rest-api-exercise.git
+git clone https://github.com/DjibrilNaji/asi-3-23-dev-b-rest-api-exercise.git
+```
 
-2. cd asi-3-23-dev-b-rest-api-exercise
+```bash
+cd asi-3-23-dev-b-rest-api-exercise
+```
 
-3. npm install
+```bash
+npm install
 ```
 
 > Créér votre .env avec vos accès à votre BDD postgresSQL et la suite
@@ -29,18 +33,28 @@ SECURITY_PASSWORD_PEPPER=
 > Lorque cela est fait, executer ces commandes :
 
 ```bash
-1. npx knex migrate:latest
-2. npx knex seed:run
-3. npm run dev
+npx knex migrate:latest
+```
+
+```
+npx knex seed:run
+```
+
+```
+npm run dev
 ```
 
 > Votre serveur sera lancer sur : http://localhost:**_Votre PORT_**
 
 # **Voici la documentation des différentes routes :**
 
+Pour pouvoir utiliser les routes qui ont besoin d'une session, il faudra utiliser la routes `/sign-in`, récupérer le token, et le mettre dans `l'authorization`. (_Bearer token sur postman_)
+
 # Roles
 
 - ## Add roles (**POST** "/roles")
+
+> **_Permissions : Admin_**
 
 Cette route permet de créer un nouveau role. Si le rôle existe déjà, un message d'erreur sera renvoyé.
 
@@ -67,6 +81,8 @@ Les seules caractères accéptés sont C pour Create, R pour Read, U pour update
 
 - ## View all roles (**GET** "/roles")
 
+> **_Permissions : Admin_**
+
 Cette route renvoie la liste des rôles existants avec une pagination :
 
 - la limite `/roles?limit=2`
@@ -83,11 +99,15 @@ Les résultats sont renvoyés sous la forme d'un objet JSON qui est un tableau d
 
 - ## View specific role by Id (**GET** "/roles/:roleId")
 
+> **_Permissions : Admin_**
+
 Cette route renvoie un seul élément des rôles existants en fonction de l'id. Si le rôle n'existe pas, un message d'erreur sera renvoyé.
 
 ---
 
 - ## Update role by Id (**PATCH** "/roles/:roleId")
+
+> **_Permissions : Admin_**
 
 Cette route permet de mettre à jour un rôle en renseignant l'id du rôle.
 
@@ -109,6 +129,8 @@ Voici un `body` type
 
 - ## Delete rôle by Id (**DELETE** "roles/:roleId")
 
+> **_Permissions : Admin_**
+
 Cette route permet de supprimer un rôle par son id. Tous les users qui ont ce rôle auront comme rôle :
 
 ```json
@@ -124,8 +146,89 @@ Cette route permet de supprimer un rôle par son id. Tous les users qui ont ce r
 }
 ```
 
-Ce rôle ne peut être supprimé.
+Ce rôle doit avoir l'id 1 pour ne pas pouvoir être supprimé et pourvoir être utilisé sur les users dont le rôles sera supprimé.
 
 ---
 
 # Users
+
+- ## Add users (**POST** "/users")
+
+> **_Permissions : Admin_**
+
+Cette route permet de créer un nouveau user. Si l'user existe déjà par son email, un message d'erreur sera renvoyé.
+
+### Voici un `body` type
+
+```json
+{
+  "email": "admin@example.com",
+  "roleId": 1,
+  "firstName": "admin", // facultatif
+  "lastName": "admin", // facultatif
+  "password": "Password123?"
+}
+```
+
+- ## Sign-in (**POST** "/sign-in")
+
+> **_Permissions : Aucune_**
+
+Cette route permet aux users de se connecter. Lorsque l'user utilise cette route, un token est renvoyé, et sera utilisé pour verifier s'il est connecter et si son rôle à les permissions d'accéder a certaines routes.
+
+Voici un `body` type
+
+```json
+{
+  "email": "admin@example.com",
+  "password": "Password123?"
+}
+```
+
+- ## View all users (**GET** "/users")
+
+> **_Permissions : Admin_**
+
+Cette route renvoie la liste des users existants avec une pagination :
+
+- la limite `/users?limit=2`
+
+- le numéro de la page `/users?page=2`
+
+Un tri par ordre ascendant ou descendant (asc, desc) :
+
+- l'order `/users?order=desc`
+
+Les résultats sont renvoyés sous la forme d'un objet JSON qui est un tableau des users existants.
+
+- ## View specific users by Id (**GET** "users/:userId")
+
+> **_Permissions : Admin or Self_**
+
+Cette route renvoie un seul élément des users existants en fonction de l'id. Si l'user n'existe pas, un message d'erreur sera renvoyé.
+
+- ## Update user by Id (**PATCH** "/users/:userId")
+
+> **_Permissions : Admin or Self_**
+
+Cette route permet de mettre à jour un user par son id.
+
+Le rôle du user ne sera modifiable que par un admin.
+
+### Voici un `body` type
+
+```json
+{
+  "email": "adminchange@gmail.com",
+  "roleId": 1, // only admin
+  "firstName": "admin",
+  "lastName": "admin",
+  "password": "PasswordChange123?"
+}
+```
+
+- ## Delete users by Id (**DELETE** "users/:userId")
+
+Cette route permet de supprimer un user par son id. Tous les users qui ont ce menu comme parent seront également supprimées.
+
+Toutes les pages, toutes les relations entre les users et les pages et toutes les relations entre les pages et les menus de navigation seront supprimés en mêmes temps que l'user.
