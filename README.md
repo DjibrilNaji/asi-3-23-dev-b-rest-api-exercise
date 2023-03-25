@@ -294,3 +294,75 @@ Cette route permet de mettre à jour un menu de navigation par son Id.
 > **_Permissions : Admin or manager_**
 
 Cette route permet de supprimer un menu de navigation par son id. Toutes les pages qui ont ce menu comme parent seront également supprimées.
+
+# Pages
+
+- ## Add pages (**POST** "/pages")
+
+> **_Permissions : Admin or manager_**
+
+Cette route permet de créer une nouvelle page. Si la existe déjà par son slug, un message d'erreur sera renvoyé.
+
+### Voici un `body` type
+
+```json
+{
+  "title": "New title",
+  "content": "Ma nouvelle page",
+  "urlSlug": "new-page",
+  "status": "draft",
+  "menuId": 1,
+  "parentId": 3 //facultatif
+}
+```
+
+- ## View all pages (**GET** "/pages")
+
+> **_Permissions : all (published), logged users (draft)_**
+
+Cette route renvoie la liste des pages existantes avec une pagination :
+
+- la limite `/pages?limit=2`
+
+- le numéro de la page `/pages?page=2`
+
+Un tri par ordre ascendant ou descendant (asc, desc) :
+
+- l'order `/pages?order=desc`
+
+Les résultats sont renvoyés sous la forme d'un objet JSON qui est un tableau des pages existantes.
+
+Les pages renvoyées sont filtrées en fonction du statut de la session. Si une session est active, toutes les pages sont renvoyées. Sinon, seules les pages publiées sont renvoyées.
+
+- ## View specific page by Id (**GET** "/pages/:pageId")
+
+> **_Permissions : all (published), logged users (draft)_**
+
+Cette route renvoie un seul élément des pages existantes en fonction de l'id. Si la page n'existe pas, un message d'erreur sera renvoyé.
+
+La pages renvoyée est filtrée en fonction du statut de la session. Si une session est active, la page est renvoyée. Sinon une erreur est retournée.
+
+- ## Update page by Id (**PATCH** "/pages/:pageId")
+
+> **_Permissions : Logged users_**
+
+Cette route permet de mettre à jour une page par son id.
+
+Le slug de l'url ne sera modifiable que par un admin.
+
+### Voici un `body` type
+
+```json
+{
+  "title": "Page modified",
+  "content": "Ma page après modification",
+  "urlSlug": "page-modified",
+  "status": "published"
+}
+```
+
+- ## Delete page by Id (**DELETE** "/pages/:pageId")
+
+Cette route permet de supprimer une page par son id.
+
+Toutes les relations entre les users et les pages et toutes les relations entre les pages et les menus de navigation seront supprimés en mêmes temps que la page.
