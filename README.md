@@ -453,4 +453,6 @@ Cette route permet de mettre à jour une relation par son id.
 
 - ## Delete relation by Id (**DELETE** "/rel-navigations-pages/:id")
 
+> **_Permissions : Admin or manager_**
+
 Cette route permet de supprimer une relation par son id.
