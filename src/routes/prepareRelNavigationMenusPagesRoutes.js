@@ -118,7 +118,7 @@ const prepareRelNavigationMenusPagesRoutes = ({ app, db }) => {
   )
 
   app.get(
-    "/rel-navigations-pages/menu/:id",
+    "/rel-navigations-pages/menus/:id",
     auth("rel_navigations_pages", "R"),
     validate({
       query: {

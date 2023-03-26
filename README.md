@@ -363,6 +363,94 @@ Le slug de l'url ne sera modifiable que par un admin.
 
 - ## Delete page by Id (**DELETE** "/pages/:pageId")
 
+> **_Permissions : Admin or manager_**
+
 Cette route permet de supprimer une page par son id.
 
 Toutes les relations entre les users et les pages et toutes les relations entre les pages et les menus de navigation seront supprimés en mêmes temps que la page.
+
+# Relation navigation-menus et pages
+
+- ## Add relation (**POST** "/rel-navigations-pages")
+
+> **_Permissions : Admin or manager_**
+
+Cette route permet de créer une nouvelle relation entre les menus et les pages.
+
+### Voici un `body` type
+
+```json
+{
+  "menuId": 1,
+  "pageId": 1,
+  "parentId": 6
+}
+```
+
+- ## View all relation menus-pages (**GET** "/rel-navigations-pages")
+
+> **_Permissions : Admin or manager_**
+
+Cette route renvoie la liste des relations existantes avec une pagination :
+
+- la limite `/rel-navigations-pages?limit=2`
+
+- le numéro de la page `/rel-navigations-pages?page=2`
+
+Un tri par ordre ascendant ou descendant (asc, desc) :
+
+- l'order `/rel-navigations-pages?order=desc`
+
+Les résultats sont renvoyés sous la forme d'un objet JSON qui est un tableau des relations existantes.
+
+- ## View specific relation by pageId (**GET** "/rel-navigations-pages/pages/:id")
+
+> **_Permissions : Admin or manager_**
+
+Cette route renvoie la liste des relations existantes d'une page précise renseigné par l'id, et pouvant avoir une pagination :
+
+- la limite `/rel-navigations-pages/pages/:id?limit=2`
+
+- le numéro de la page `/rel-navigations-pages/pages/:id?page=2`
+
+Un tri par ordre ascendant ou descendant (asc, desc) :
+
+- l'order `/rel-navigations-pages/pages/:id?order=desc`
+
+Les résultats sont renvoyés sous la forme d'un objet JSON qui est un tableau des relations existantes.
+
+- ## View specific relation by menuId (**GET** "/rel-navigations-pages/menus/:id")
+
+> **_Permissions : Admin or manager_**
+
+Cette route renvoie la liste des relations existantes d'un menu précis renseigné par l'id, et pouvant avoir une pagination :
+
+- la limite `/rel-navigations-pages/menus/:id?limit=2`
+
+- le numéro de la page `/rel-navigations-pages/menus/:id?page=2`
+
+Un tri par ordre ascendant ou descendant (asc, desc) :
+
+- l'order `/rel-navigations-pages/menus/:id?order=desc`
+
+Les résultats sont renvoyés sous la forme d'un objet JSON qui est un tableau des relations existantes.
+
+- ## Update relation by Id (**PATCH** "/rel-navigations-pages/:id")
+
+> **_Permissions : Admin or manager_**
+
+Cette route permet de mettre à jour une relation par son id.
+
+### Voici un `body` type
+
+```json
+{
+  "menuId": 1,
+  "pageId": 1,
+  "parentId": 5
+}
+```
+
+- ## Delete relation by Id (**DELETE** "/rel-navigations-pages/:id")
+
+Cette route permet de supprimer une relation par son id.

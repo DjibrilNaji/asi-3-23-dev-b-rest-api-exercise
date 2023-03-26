@@ -35,7 +35,7 @@ const prepareRolesRoutes = ({ app, db }) => {
   )
 
   app.get(
-    "/role/:roleId",
+    "/roles/:roleId",
     auth("roles", "R"),
     validate({
       params: {
@@ -85,7 +85,7 @@ const prepareRolesRoutes = ({ app, db }) => {
   )
 
   app.patch(
-    "/role/:roleId",
+    "/roles/:roleId",
     auth("roles", "U"),
     validate({
       params: {
@@ -122,7 +122,7 @@ const prepareRolesRoutes = ({ app, db }) => {
   )
 
   app.delete(
-    "/role/:roleId",
+    "/roles/:roleId",
     auth("roles", "D"),
     validate({
       params: {
