@@ -113,8 +113,8 @@ This route allows you to create a new user. If the user already exists by his em
 {
   "email": "admin@example.com",
   "roleId": 1,
-  "firstName": "admin", // facultatif
-  "lastName": "admin", // facultatif
+  "firstName": "admin",
+  "lastName": "admin",
   "password": "Password123?"
 }
 ```
