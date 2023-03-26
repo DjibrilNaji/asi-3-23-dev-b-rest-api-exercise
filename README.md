@@ -44,7 +44,7 @@ npx knex seed:run
 npm run dev
 ```
 
-> Votre serveur sera lancer sur : http://localhost:**_Votre PORT_**
+> Votre serveur sera lancer sur : http://localhost: **_Votre PORT_**
 
 # **Voici la documentation des différentes routes :**
 
