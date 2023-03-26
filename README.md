@@ -1,10 +1,10 @@
-### Lien vers le repo :
+### Link to the repo :
 
 https://github.com/DjibrilNaji/asi-3-23-dev-b-rest-api-exercise
 
-# Pour utiliser ce repertoire
+# To use this directory
 
-> Suivre ces commandes sur votre terminal
+> Follow these commands on your terminal
 
 ```bash
 git clone https://github.com/DjibrilNaji/asi-3-23-dev-b-rest-api-exercise.git
@@ -18,7 +18,7 @@ cd asi-3-23-dev-b-rest-api-exercise
 npm install
 ```
 
-> Créér votre .env avec vos accès à votre BDD postgresSQL et la suite
+> Create your .env with these fields
 
 ```
 PORT=
@@ -30,7 +30,7 @@ SECURITY_JWT_SECRET=
 SECURITY_PASSWORD_PEPPER=
 ```
 
-> Lorque cela est fait, executer ces commandes :
+> When done, run these commands:
 
 ```bash
 npx knex migrate:latest
@@ -44,56 +44,28 @@ npx knex seed:run
 npm run dev
 ```
 
-> Votre serveur sera lancer sur : http://localhost: **_Votre PORT_**
+> Your server will be running on : http://localhost: **_Your PORT_**
 
-# **Voici la documentation des différentes routes :**
+# **Here is the documentation of the different routes :**
 
-Pour pouvoir utiliser les routes qui ont besoin d'une session, il faudra utiliser la routes `/sign-in`, récupérer le token, et le mettre dans `l'authorization`. (_Bearer token sur postman_)
+To be able to use the routes that need a session, you will have to use the `/sign-in` routes, retrieve the token, and put it in `Authorization`. (_Bearer token on postman_)
 
 # Roles
-
-- ## Add roles (**POST** "/roles")
-
-> **_Permissions : Admin_**
-
-Cette route permet de créer un nouveau role. Si le rôle existe déjà, un message d'erreur sera renvoyé.
-
-L'objet permissions contient les ressources concernées par le CRUD.
-Chaque ressource a ses propres permissions.
-
-Les seules caractères accéptés sont C pour Create, R pour Read, U pour update, et D pour Delete. (CRUD)
-
-### Voici un `body` type
-
-```json
-{
-  "name": "NewRole",
-  "permissions": {
-    "users": "C",
-    "roles": "",
-    "pages": "R",
-    "navigation_menu": "R"
-  }
-}
-```
-
----
 
 - ## View all roles (**GET** "/roles")
 
 > **_Permissions : Admin_**
+> This route returns the list of existing roles with pagination :
 
-Cette route renvoie la liste des rôles existants avec une pagination :
+- the limit `/roles?limit=2`
 
-- la limite `/roles?limit=2`
+- the page number `/roles?page=2`
 
-- le numéro de la page `/roles?page=2`
+and a sort in ascending or descending order (asc, desc):
 
-et un tri par ordre ascendant ou descendant (asc, desc) :
+- the order `/roles?order=desc`
 
-- l'order `/roles?order=desc`
-
-Les résultats sont renvoyés sous la forme d'un objet JSON qui est un tableau des rôles existants.
+The results are returned as a JSON object which is an array of existing roles.
 
 ---
 
@@ -101,7 +73,7 @@ Les résultats sont renvoyés sous la forme d'un objet JSON qui est un tableau d
 
 > **_Permissions : Admin_**
 
-Cette route renvoie un seul élément des rôles existants en fonction de l'id. Si le rôle n'existe pas, un message d'erreur sera renvoyé.
+This route returns a single item of existing roles based on id. If the role does not exist, an error message will be returned.
 
 ---
 
@@ -109,9 +81,9 @@ Cette route renvoie un seul élément des rôles existants en fonction de l'id. 
 
 > **_Permissions : Admin_**
 
-Cette route permet de mettre à jour un rôle en renseignant l'id du rôle.
+This route allows you to update a role by entering the role id.
 
-Voici un `body` type
+### Here is a `body` type
 
 ```json
 {
@@ -127,38 +99,15 @@ Voici un `body` type
 
 ---
 
-- ## Delete rôle by Id (**DELETE** "roles/:roleId")
-
-> **_Permissions : Admin_**
-
-Cette route permet de supprimer un rôle par son id. Tous les users qui ont ce rôle auront comme rôle :
-
-```json
-{
-  "name": "No role",
-  "permissions": {
-    "users": "",
-    "roles": "",
-    "pages": "",
-    "navigation_menus": "",
-    "rel_navigations_pages": ""
-  }
-}
-```
-
-Ce rôle doit avoir l'id 1 pour ne pas pouvoir être supprimé et pourvoir être utilisé sur les users dont le rôles sera supprimé.
-
----
-
 # Users
 
 - ## Add users (**POST** "/users")
 
 > **_Permissions : Admin_**
 
-Cette route permet de créer un nouveau user. Si l'user existe déjà par son email, un message d'erreur sera renvoyé.
+This route allows you to create a new user. If the user already exists by his email, an error message will be returned.
 
-### Voici un `body` type
+### Here is a `body` type
 
 ```json
 {
@@ -174,9 +123,9 @@ Cette route permet de créer un nouveau user. Si l'user existe déjà par son em
 
 > **_Permissions : Aucune_**
 
-Cette route permet aux users de se connecter. Lorsque l'user utilise cette route, un token est renvoyé, et sera utilisé pour verifier s'il est connecter et si son rôle à les permissions d'accéder a certaines routes.
+This route allows users to connect. When the user uses this route, a token is returned, which will be used to check if he is logged in and if his role has permissions to access certain routes.
 
-Voici un `body` type
+### Here is a `body` type
 
 ```json
 {
@@ -189,33 +138,33 @@ Voici un `body` type
 
 > **_Permissions : Admin_**
 
-Cette route renvoie la liste des users existants avec une pagination :
+This route returns the list of existing users with pagination:
 
-- la limite `/users?limit=2`
+- the limit `/users?limit=2`
 
-- le numéro de la page `/users?page=2`
+- the page number `/users?page=2`
 
-Un tri par ordre ascendant ou descendant (asc, desc) :
+A sort in ascending or descending order (asc, desc):
 
-- l'order `/users?order=desc`
+- the order `/users?order=desc`
 
-Les résultats sont renvoyés sous la forme d'un objet JSON qui est un tableau des users existants.
+The results are returned as a JSON object which is an array of existing users.
 
 - ## View specific users by Id (**GET** "users/:userId")
 
 > **_Permissions : Admin or Self_**
 
-Cette route renvoie un seul élément des users existants en fonction de l'id. Si l'user n'existe pas, un message d'erreur sera renvoyé.
+This route returns a single element of existing users based on id. If the user does not exist, an error message will be returned.
 
 - ## Update user by Id (**PATCH** "/users/:userId")
 
 > **_Permissions : Admin or Self_**
 
-Cette route permet de mettre à jour un user par son id.
+This route allows to update a user by his id.
 
-Le rôle du user ne sera modifiable que par un admin.
+The role of the user can only be modified by an admin.
 
-### Voici un `body` type
+### Here is a `body` type
 
 ```json
 {
@@ -229,11 +178,11 @@ Le rôle du user ne sera modifiable que par un admin.
 
 - ## Delete users by Id (**DELETE** "users/:userId")
 
-> Permissions : Admin or Self
+> **_Permissions : Admin or Self_**
 
-Cette route permet de supprimer un user par son id. Tous les users qui ont ce menu comme parent seront également supprimées.
+This route allows to delete a user by his id. All users who have this menu as a parent will also be deleted.
 
-Toutes les pages, toutes les relations entre les users et les pages et toutes les relations entre les pages et les menus de navigation seront supprimés en mêmes temps que l'user.
+All pages, all relationships between users and pages, and all relationships between pages and navigation menus will be deleted along with the user.
 
 # Navigations Menu
 
@@ -241,9 +190,9 @@ Toutes les pages, toutes les relations entre les users et les pages et toutes le
 
 > **_Permissions : Admin or manager_**
 
-Cette route permet de créer un nouveau menu de navigation. Si le menu de navigation existe déjà, un message d'erreur sera renvoyé.
+This route creates a new navigation menu. If the navigation menu already exists, an error message will be returned.
 
-### Voici un `body` type
+### Here is a `body` type
 
 ```json
 {
@@ -255,31 +204,31 @@ Cette route permet de créer un nouveau menu de navigation. Si le menu de naviga
 
 > **_Permissions : All_**
 
-Cette route renvoie la liste des menus de navigation existants avec une pagination :
+This route returns the list of existing navigation menus with pagination:
 
-- la limite `/navigation-menus?limit=2`
+- the limit `/navigation-menus?limit=2`
 
-- le numéro de la page `/navigation-menus?page=2`
+- the page number `/navigation-menus?page=2`
 
-Un tri par ordre ascendant ou descendant (asc, desc) :
+A sort in ascending or descending order (asc, desc):
 
-- l'order `/navigation-menus?order=desc`
+- the order `/navigation-menus?order=desc`
 
-Les résultats sont renvoyés sous la forme d'un objet JSON qui est un tableau des menus de navigation existants.
+The results are returned as a JSON object which is an array of existing navigation menus.
 
 - ## View specific navigation-menu by Id (**GET** "navigation-menus/:navigationMenuId")
 
 > **_Permissions : All_**
 
-Cette route renvoie un seul élément des menus de navigation existants en fonction de l'id. Si le menu de navigation n'existe pas, un message d'erreur sera renvoyé.
+This route returns a single item from existing navigation menus based on id. If the navigation menu does not exist, an error message will be returned.
 
 - ## Update navigation-menus by Id (**PATCH** "navigation-menus/:navigationMenuId")
 
 > **_Permissions : Admin or manager_**
 
-Cette route permet de mettre à jour un menu de navigation par son Id.
+This route is used to update a navigation menu by its id.
 
-### Voici un `body` type
+### Here is a `body` type
 
 ```json
 {
@@ -293,7 +242,7 @@ Cette route permet de mettre à jour un menu de navigation par son Id.
 
 > **_Permissions : Admin or manager_**
 
-Cette route permet de supprimer un menu de navigation par son id. Toutes les pages qui ont ce menu comme parent seront également supprimées.
+This route allows you to delete a navigation menu by its id. All pages that have this menu as a parent will also be deleted.
 
 # Pages
 
@@ -301,9 +250,9 @@ Cette route permet de supprimer un menu de navigation par son id. Toutes les pag
 
 > **_Permissions : Admin or manager_**
 
-Cette route permet de créer une nouvelle page. Si la existe déjà par son slug, un message d'erreur sera renvoyé.
+This route creates a new page. If the already exists by its slug, an error message will be returned.
 
-### Voici un `body` type
+### Here is a `body` type
 
 ```json
 {
@@ -320,37 +269,37 @@ Cette route permet de créer une nouvelle page. Si la existe déjà par son slug
 
 > **_Permissions : all (published), logged users (draft)_**
 
-Cette route renvoie la liste des pages existantes avec une pagination :
+This route returns the list of existing pages with pagination:
 
-- la limite `/pages?limit=2`
+- the limit `/pages?limit=2`
 
-- le numéro de la page `/pages?page=2`
+- the page number `/pages?page=2`
 
-Un tri par ordre ascendant ou descendant (asc, desc) :
+A sort in ascending or descending order (asc, desc):
 
-- l'order `/pages?order=desc`
+- the order `/pages?order=desc`
 
-Les résultats sont renvoyés sous la forme d'un objet JSON qui est un tableau des pages existantes.
+The results are returned as a JSON object which is an array of existing pages.
 
-Les pages renvoyées sont filtrées en fonction du statut de la session. Si une session est active, toutes les pages sont renvoyées. Sinon, seules les pages publiées sont renvoyées.
+Returned pages are filtered based on session status. If a session is active, all pages are returned. Otherwise, only published pages are returned.
 
 - ## View specific page by Id (**GET** "/pages/:pageId")
 
 > **_Permissions : all (published), logged users (draft)_**
 
-Cette route renvoie un seul élément des pages existantes en fonction de l'id. Si la page n'existe pas, un message d'erreur sera renvoyé.
+This route returns a single item from existing pages based on id. If the page does not exist, an error message will be returned.
 
-La pages renvoyée est filtrée en fonction du statut de la session. Si une session est active, la page est renvoyée. Sinon une erreur est retournée.
+The returned page is filtered based on session status. If a session is active, the page is returned. Otherwise an error is returned.
 
 - ## Update page by Id (**PATCH** "/pages/:pageId")
 
 > **_Permissions : Logged users_**
 
-Cette route permet de mettre à jour une page par son id.
+This route allows to update a page by its id.
 
-Le slug de l'url ne sera modifiable que par un admin.
+The url slug will only be editable by an admin.
 
-### Voici un `body` type
+### Here is a `body` type
 
 ```json
 {
@@ -365,19 +314,19 @@ Le slug de l'url ne sera modifiable que par un admin.
 
 > **_Permissions : Admin or manager_**
 
-Cette route permet de supprimer une page par son id.
+This route allows you to delete a page by its id.
 
-Toutes les relations entre les users et les pages et toutes les relations entre les pages et les menus de navigation seront supprimés en mêmes temps que la page.
+All relationships between users and pages and all relationships between pages and navigation menus will be deleted along with the page.
 
-# Relation navigation-menus et pages
+# Relation between navigation-menus and pages
 
 - ## Add relation (**POST** "/rel-navigations-pages")
 
 > **_Permissions : Admin or manager_**
 
-Cette route permet de créer une nouvelle relation entre les menus et les pages.
+This route creates a new relationship between menus and pages.
 
-### Voici un `body` type
+### Here is a `body` type
 
 ```json
 {
@@ -391,57 +340,41 @@ Cette route permet de créer une nouvelle relation entre les menus et les pages.
 
 > **_Permissions : Admin or manager_**
 
-Cette route renvoie la liste des relations existantes avec une pagination :
+This route returns the list of existing relationships with a pagination:
 
-- la limite `/rel-navigations-pages?limit=2`
+- the limit `/rel-navigations-pages?limit=2`
 
-- le numéro de la page `/rel-navigations-pages?page=2`
+- the page number `/rel-navigations-pages?page=2`
 
-Un tri par ordre ascendant ou descendant (asc, desc) :
+A sort in ascending or descending order (asc, desc):
 
-- l'order `/rel-navigations-pages?order=desc`
+- the order `/rel-navigations-pages?order=desc`
 
-Les résultats sont renvoyés sous la forme d'un objet JSON qui est un tableau des relations existantes.
+The results are returned as a JSON object which is an array of existing relationships.
 
-- ## View specific relation by pageId (**GET** "/rel-navigations-pages/pages/:id")
-
-> **_Permissions : Admin or manager_**
-
-Cette route renvoie la liste des relations existantes d'une page précise renseigné par l'id, et pouvant avoir une pagination :
-
-- la limite `/rel-navigations-pages/pages/:id?limit=2`
-
-- le numéro de la page `/rel-navigations-pages/pages/:id?page=2`
-
-Un tri par ordre ascendant ou descendant (asc, desc) :
-
-- l'order `/rel-navigations-pages/pages/:id?order=desc`
-
-Les résultats sont renvoyés sous la forme d'un objet JSON qui est un tableau des relations existantes.
-
-- ## View specific relation by menuId (**GET** "/rel-navigations-pages/menus/:id")
+- ## View specific relation by /page/id or /menu/id (**GET** "/rel-navigations-pages/:ressource/:id")
 
 > **_Permissions : Admin or manager_**
 
-Cette route renvoie la liste des relations existantes d'un menu précis renseigné par l'id, et pouvant avoir une pagination :
+This route returns the list of existing relations of a specific page filled in by the id, and which may have a pagination:
 
-- la limite `/rel-navigations-pages/menus/:id?limit=2`
+- the limit `/rel-navigations-pages/:ressource/:id?limit=2`
 
-- le numéro de la page `/rel-navigations-pages/menus/:id?page=2`
+- the page number `/rel-navigations-pages/:ressource/:id?page=2`
 
-Un tri par ordre ascendant ou descendant (asc, desc) :
+A sort in ascending or descending order (asc, desc):
 
-- l'order `/rel-navigations-pages/menus/:id?order=desc`
+- the order `/rel-navigations-pages/ressource/:id?order=desc`
 
-Les résultats sont renvoyés sous la forme d'un objet JSON qui est un tableau des relations existantes.
+The results are returned as a JSON object which is an array of existing relationships.
 
 - ## Update relation by Id (**PATCH** "/rel-navigations-pages/:id")
 
 > **_Permissions : Admin or manager_**
 
-Cette route permet de mettre à jour une relation par son id.
+This route allows to update a relation by its id.
 
-### Voici un `body` type
+### Here is a `body` type
 
 ```json
 {
@@ -455,4 +388,4 @@ Cette route permet de mettre à jour une relation par son id.
 
 > **_Permissions : Admin or manager_**
 
-Cette route permet de supprimer une relation par son id.
+This route allows you to delete a relation by its id.
