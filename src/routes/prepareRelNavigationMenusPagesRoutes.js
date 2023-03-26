@@ -9,6 +9,7 @@ import {
   limitValidator,
   orderValidator,
   pageValidator,
+  ressourcesValidator,
 } from "../validators.js"
 
 const prepareRelNavigationMenusPagesRoutes = ({ app, db }) => {
@@ -60,7 +61,7 @@ const prepareRelNavigationMenusPagesRoutes = ({ app, db }) => {
   )
 
   app.get(
-    "/rel-navigations-pages/pages/:id",
+    "/rel-navigations-pages/:ressource/:id",
     auth("rel_navigations_pages", "R"),
     validate({
       query: {
@@ -70,6 +71,7 @@ const prepareRelNavigationMenusPagesRoutes = ({ app, db }) => {
       },
       params: {
         id: idValidator.required(),
+        ressource: ressourcesValidator.required(),
       },
     }),
     async (req, res) => {
@@ -103,72 +105,16 @@ const prepareRelNavigationMenusPagesRoutes = ({ app, db }) => {
           "rel_navigation_menus__pages.parentId",
           "p2.title"
         )
-        .where({
-          pageId: req.params.id,
-        })
+        .where(
+          req.params.ressource === "pages"
+            ? { pageId: req.params.id }
+            : { menuId: req.params.id }
+        )
         .modify("paginate", limit, page)
         .orderBy("id", order)
 
       if (!relNavPages) {
-        throw new InvalidArgumentError()
-      }
-
-      res.send({ result: relNavPages })
-    }
-  )
-
-  app.get(
-    "/rel-navigations-pages/menus/:id",
-    auth("rel_navigations_pages", "R"),
-    validate({
-      query: {
-        limit: limitValidator,
-        page: pageValidator,
-        order: orderValidator.default("asc"),
-      },
-      params: {
-        id: idValidator.required(),
-      },
-    }),
-    async (req, res) => {
-      const { limit, page, order } = req.locals.query
-
-      const relNavPages = await RelNavigationMenusPagesModel.query()
-        .innerJoin(
-          "pages as p1",
-          "rel_navigation_menus__pages.pageId",
-          "=",
-          "p1.id"
-        )
-        .leftJoin(
-          "pages as p2",
-          "rel_navigation_menus__pages.parentId",
-          "=",
-          "p2.id"
-        )
-        .innerJoin(
-          "navigation_menus",
-          "rel_navigation_menus__pages.menuId",
-          "=",
-          "navigation_menus.id"
-        )
-        .select(
-          "rel_navigation_menus__pages.id",
-          "rel_navigation_menus__pages.menuId",
-          "navigation_menus.name as menu",
-          "rel_navigation_menus__pages.pageId",
-          "p1.title as page",
-          "rel_navigation_menus__pages.parentId",
-          "p2.title"
-        )
-        .where({
-          menuId: req.params.id,
-        })
-        .modify("paginate", limit, page)
-        .orderBy("id", order)
-
-      if (!relNavPages) {
-        throw new InvalidArgumentError()
+        throw new NotFoundError()
       }
 
       res.send({ result: relNavPages })

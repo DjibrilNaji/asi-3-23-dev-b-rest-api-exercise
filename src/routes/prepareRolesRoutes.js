@@ -10,7 +10,6 @@ import {
   orderValidator,
   pageValidator,
   ressourcePermissionValidator,
-  roleIdValidator,
 } from "../validators.js"
 
 const prepareRolesRoutes = ({ app, db }) => {
@@ -126,7 +125,7 @@ const prepareRolesRoutes = ({ app, db }) => {
     auth("roles", "D"),
     validate({
       params: {
-        roleId: roleIdValidator.required(),
+        roleId: idValidator.required(),
       },
     }),
     async (req, res) => {

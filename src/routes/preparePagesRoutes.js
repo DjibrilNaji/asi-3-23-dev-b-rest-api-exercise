@@ -2,11 +2,7 @@ import NavigationMenuModel from "../db/models/NavigationMenuModel.js"
 import RelNavigationMenusPagesModel from "../db/models/RelNavigationMenusPagesModel.js"
 import RelUsersPagesModel from "../db/models/RelUsersPagesModel.js"
 import PageModel from "../db/models/PageModel.js"
-import {
-  InvalidArgumentError,
-  InvalidSessionError,
-  NotFoundError,
-} from "../errors.js"
+import { InvalidSessionError, NotFoundError } from "../errors.js"
 import auth from "../middlewares/auth.js"
 import mw from "../middlewares/mw.js"
 import validate from "../middlewares/validate.js"
@@ -20,7 +16,6 @@ import {
   stringValidator,
   urlSlugValidator,
 } from "../validators.js"
-import RoleModel from "../db/models/RoleModel.js"
 
 const preparePagesRoutes = ({ app, db }) => {
   app.get(
@@ -211,28 +206,21 @@ const preparePagesRoutes = ({ app, db }) => {
         body: { title, content, urlSlug, status },
         session: { user: userSession },
       } = req.locals
+      const { pageId } = req.params
 
-      const page = await PageModel.query().findById(req.params.pageId)
+      const page = await PageModel.query().findById(pageId)
 
       if (!page) {
         throw new NotFoundError()
       }
 
-      const sessionRole = await RoleModel.query().findOne({
-        name: userSession.role,
-      })
-
-      if (!sessionRole) {
-        throw new InvalidArgumentError()
-      }
-
-      const permission = sessionRole.permissions.pages
-
       const updatedPage = await PageModel.query()
         .update({
           ...(title ? { title } : {}),
           ...(content ? { content } : {}),
-          ...(permission.includes("C") && urlSlug ? { urlSlug } : {}),
+          ...(userSession.permission.pages.includes("C") && urlSlug
+            ? { urlSlug }
+            : {}),
           ...(status ? { status } : {}),
         })
         .where({
@@ -259,6 +247,7 @@ const preparePagesRoutes = ({ app, db }) => {
     }),
     async (req, res) => {
       const { pageId } = req.params
+
       const page = await PageModel.query().findById(pageId)
 
       if (!page) {

@@ -2,7 +2,7 @@ import RoleModel from "../db/models/RoleModel.js"
 import { InvalidAccessError, InvalidSessionError } from "../errors.js"
 import mw from "./mw.js"
 
-const auth = (ressource, perm) =>
+const auth = (ressource, perm, self = false) =>
   mw(async (req, res, next) => {
     const session = req.locals
 
@@ -24,8 +24,16 @@ const auth = (ressource, perm) =>
 
     const permission = userSession.permission[ressource]
 
-    if (!permission.includes(perm)) {
-      throw new InvalidAccessError()
+    if (self) {
+      const { userId } = req.params
+
+      if (!permission.includes(perm) && userId != userSession.userId) {
+        throw new InvalidAccessError()
+      }
+    } else {
+      if (!permission.includes(perm)) {
+        throw new InvalidAccessError()
+      }
     }
 
     next()

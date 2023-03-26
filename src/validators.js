@@ -5,8 +5,6 @@ import config from "./config.js"
 export const idValidator = yup.number().integer().min(1)
 
 // Min 2 because the role with id 1 is a default role with no permissions
-export const roleIdValidator = yup.number().integer().min(2)
-
 export const stringValidator = yup.string()
 
 export const nameValidator = yup.string().min(1)
@@ -64,3 +62,10 @@ export const limitValidator = yup
 export const pageValidator = yup.number().integer().min(0).default(1)
 
 export const orderValidator = yup.string().lowercase().oneOf(["asc", "desc"])
+
+// Navigation menu
+
+export const ressourcesValidator = yup
+  .string()
+  .lowercase()
+  .oneOf(["pages", "menus"])
