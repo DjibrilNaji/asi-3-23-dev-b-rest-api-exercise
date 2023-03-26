@@ -14,16 +14,6 @@ export const seed = async (knex) => {
 
   await knex("roles").insert([
     {
-      name: "No role",
-      permissions: {
-        users: "",
-        roles: "",
-        pages: "",
-        navigation_menus: "",
-        rel_navigations_pages: "",
-      },
-    },
-    {
       name: "admin",
       permissions: {
         users: "CRUD",
@@ -58,7 +48,7 @@ export const seed = async (knex) => {
   await knex("users").insert([
     {
       email: "admin@example.com",
-      roleId: 2,
+      roleId: 1,
       firstName: "John",
       lastName: "Doe",
       passwordHash: passwordHash,
@@ -66,7 +56,7 @@ export const seed = async (knex) => {
     },
     {
       email: "manager@example.com",
-      roleId: 3,
+      roleId: 2,
       firstName: "Jane",
       lastName: "Doe",
       passwordHash: passwordHash,
@@ -74,7 +64,7 @@ export const seed = async (knex) => {
     },
     {
       email: "editor@example.com",
-      roleId: 4,
+      roleId: 3,
       firstName: "Bob",
       lastName: "Smith",
       passwordHash: passwordHash,
