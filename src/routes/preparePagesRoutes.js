@@ -27,8 +27,9 @@ const preparePagesRoutes = ({ app, db }) => {
         order: orderValidator.default("asc"),
       },
     }),
-    mw(async (req, res) => {
+    async (req, res) => {
       const session = req.locals
+
       const { limit, page, order } = req.locals.query
 
       if (session) {
@@ -71,7 +72,7 @@ const preparePagesRoutes = ({ app, db }) => {
 
         res.send({ result: pages })
       }
-    })
+    }
   )
 
   app.get(
